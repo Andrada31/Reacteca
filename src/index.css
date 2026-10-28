@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter-tight";
+@import "@fontsource-variable/jetbrains-mono";
+
+/*
+ * Dark mode is the `.dark` class on <html>. Any element can re-scope the theme
+ * with a `.light` or `.dark` class (the preview canvas does this), so `dark:`
+ * utilities stop applying inside a `.light` scope.
+ */
+@custom-variant dark (&:where(.dark, .dark *):not(:where(.light, .light *)));
+
+@theme inline {
+    --font-heading: var(--font-display);
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --color-transparent: transparent;
+    --radius-xs: calc(var(--radius) - 6px);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) * 1.5);
+    --radius-3xl: calc(var(--radius) * 1.75);
+    --radius-4xl: calc(var(--radius) * 2.5);
+    --font-display: var(--font-display);
+    --font-text: var(--font-text);
+    /* Shadow utilities resolve to the zeroed values below: elevation is tonal. */
+    --shadow-2xs: var(--shadow-2xs);
+    --shadow-xs: var(--shadow-xs);
+    --shadow-sm: var(--shadow-sm);
+    --shadow: var(--shadow);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+    --shadow-2xl: var(--shadow-2xl);
+
+    /* App additions. */
+    --color-primary-strong: var(--primary-strong);
+    --color-code: var(--code);
+    --color-surface-1: var(--surface-1);
+    --color-surface-2: var(--surface-2);
+    --color-surface-3: var(--surface-3);
+    --color-footer: var(--footer);
+    --color-footer-foreground: var(--footer-foreground);
+    --color-footer-muted: var(--footer-muted);
+}
+
+/*
+ * Theme: monochrome, modelled on mobbin.com (white canvas, near-black ink, soft
+ * gray surfaces; dark mode inverts it), with celestial's cyan as the one accent:
+ * primary actions, highlights and focus. `.light` lets the preview canvas
+ * re-scope the light theme inside a dark page.
+ */
+:root,
+.light {
+    color-scheme: light;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.17 0 0);
+    --card-foreground: oklch(0.17 0 0);
+    --popover-foreground: oklch(0.17 0 0);
+    --primary: oklch(0.8012 0.1089 201.1736);
+    --primary-foreground: oklch(0 0 0);
+    --secondary: oklch(0.948 0 0);
+    --secondary-foreground: oklch(0.17 0 0);
+    --muted-foreground: oklch(0.5 0 0);
+    --accent-foreground: oklch(0.17 0 0);
+    --destructive: oklch(0.58 0.22 27);
+    --border: oklch(0.92 0 0);
+    --ring: oklch(0.8012 0.1089 201.1736);
+    --chart-1: oklch(0.8012 0.1089 201.1736);
+    --chart-2: oklch(0.6907 0.1554 160.3454);
+    --chart-3: oklch(0.8214 0.1600 82.5337);
+    --chart-4: oklch(0.7064 0.1822 151.7125);
+    --chart-5: oklch(0.5919 0.2186 10.5826);
+    --radius: 1rem;
+    --sidebar-foreground: oklch(0.17 0 0);
+    --sidebar-primary: oklch(0.8012 0.1089 201.1736);
+    --sidebar-primary-foreground: oklch(0 0 0);
+    --sidebar-accent: oklch(0.92 0 0);
+    --sidebar-accent-foreground: oklch(0.17 0 0);
+    --sidebar-border: oklch(0.92 0 0);
+    --sidebar-ring: oklch(0.8012 0.1089 201.1736);
+    --font-sans: 'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+    --font-text: 'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* App additions. */
+    --primary-strong: oklch(0.52 0.10 215);
+    --footer: oklch(0.17 0 0);
+    --footer-foreground: oklch(0.97 0 0);
+    --footer-muted: oklch(0.66 0 0);
+    --syntax-plain: oklch(0.2435 0 0);
+    --syntax-comment: oklch(0.58 0.012 240);
+    --syntax-keyword: oklch(0.50 0.11 220);
+    --syntax-string: oklch(0.52 0.12 158);
+    --syntax-function: oklch(0.50 0.15 255);
+    --syntax-tag: oklch(0.52 0.19 10.6);
+    --syntax-attr: oklch(0.58 0.13 70);
+    --syntax-number: oklch(0.57 0.16 42);
+    --syntax-class: oklch(0.50 0.09 190);
+    --syntax-punctuation: oklch(0.50 0.01 240);
+    --syntax-property: oklch(0.42 0.08 230);
+    --syntax-heading: oklch(0.50 0.11 220);
+}
+
+.dark {
+    color-scheme: dark;
+    --background: oklch(0.16 0 0);
+    --foreground: oklch(0.97 0 0);
+    --card-foreground: oklch(0.97 0 0);
+    --popover-foreground: oklch(0.97 0 0);
+    --primary: oklch(0.8012 0.1089 201.1736);
+    --primary-foreground: oklch(0 0 0);
+    --secondary: oklch(0.25 0 0);
+    --secondary-foreground: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.69 0 0);
+    --accent-foreground: oklch(0.97 0 0);
+    --destructive: oklch(0.66 0.2 25);
+    --border: oklch(0.28 0 0);
+    --ring: oklch(0.8012 0.1089 201.1736);
+    --chart-1: oklch(0.8012 0.1089 201.1736);
+    --chart-2: oklch(0.6907 0.1554 160.3454);
+    --chart-3: oklch(0.8214 0.1600 82.5337);
+    --chart-4: oklch(0.7064 0.1822 151.7125);
+    --chart-5: oklch(0.5919 0.2186 10.5826);
+    --sidebar-foreground: oklch(0.97 0 0);
+    --sidebar-primary: oklch(0.8012 0.1089 201.1736);
+    --sidebar-primary-foreground: oklch(0 0 0);
+    --sidebar-accent: oklch(0.27 0 0);
+    --sidebar-accent-foreground: oklch(0.97 0 0);
+    --sidebar-border: oklch(0.28 0 0);
+    --sidebar-ring: oklch(0.8012 0.1089 201.1736);
+
+    --primary-strong: var(--primary);
+    --footer: var(--surface-2);
+    --footer-foreground: var(--foreground);
+    --footer-muted: var(--muted-foreground);
+    --syntax-plain: oklch(0.9328 0.0025 228.7857);
+    --syntax-comment: oklch(0.58 0.02 248);
+    --syntax-keyword: oklch(0.8012 0.1089 201.1736);
+    --syntax-string: oklch(0.78 0.13 160);
+    --syntax-function: oklch(0.78 0.10 245);
+    --syntax-tag: oklch(0.72 0.17 10.6);
+    --syntax-attr: oklch(0.83 0.14 82.5);
+    --syntax-number: oklch(0.80 0.12 55);
+    --syntax-class: oklch(0.83 0.09 185);
+    --syntax-punctuation: oklch(0.69 0 0);
+    --syntax-property: oklch(0.86 0.05 215);
+    --syntax-heading: oklch(0.8012 0.1089 201.1736);
+}
+
+/*
+ * DESIGN RULE: no borders, no gradients. Surfaces are told apart by tone alone.
+ * Each layer is the background mixed with a little of the foreground, so the
+ * steps hold in light and dark mode and for any theme installed later:
+ *
+ *   background → surface-1 (cards, frames, code) → surface-2 (controls, tracks,
+ *   inputs, menus) → surface-3 (hover/pressed). accent = highlighted item.
+ *
+ * Listed on all three selectors so a `.light` / `.dark` scope recomputes them
+ * from its own colors. Shadows are off: elevation comes from tone too.
+ */
+:root,
+.light,
+.dark {
+    --surface-1: color-mix(in oklab, var(--foreground) 4%, var(--background));
+    --surface-2: color-mix(in oklab, var(--foreground) 7.5%, var(--background));
+    --surface-3: color-mix(in oklab, var(--foreground) 11%, var(--background));
+    --card: var(--surface-1);
+    --sidebar: var(--surface-1);
+    --code: var(--surface-1);
+    --muted: var(--surface-2);
+    --input: var(--surface-2);
+    --popover: var(--surface-2);
+    --accent: color-mix(in oklab, var(--primary) 20%, var(--surface-2));
+    --shadow-2xs: 0 0 #0000;
+    --shadow-xs: 0 0 #0000;
+    --shadow-sm: 0 0 #0000;
+    --shadow: 0 0 #0000;
+    --shadow-md: 0 0 #0000;
+    --shadow-lg: 0 0 #0000;
+    --shadow-xl: 0 0 #0000;
+    --shadow-2xl: 0 0 #0000;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-footer font-sans antialiased;
+    scroll-padding-top: 5.5rem;
+  }
+  body {
+    @apply bg-footer text-foreground;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  body, p {
+    font-family: var(--font-text);
+  }
+  p {
+    text-wrap: pretty;
+  }
+  code, pre, kbd {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
+  :not(pre) > code {
+    @apply rounded-md bg-muted px-1.5 py-0.5 text-[0.85em] whitespace-nowrap text-foreground;
+  }
+  ::selection {
+    @apply bg-primary text-primary-foreground;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-3) transparent;
+  }
+}
+
+@utility container {
+    margin-inline: auto;
+    padding-inline: 2rem;
+}
+
+/* Canvas backgrounds for the preview panel (hard-stop lines and dots, not color gradients). */
+@utility canvas-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-position: -1px -1px;
+  background-size: 24px 24px;
+}
+
+@utility canvas-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 18%, transparent) 1px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+/* Theme switches cross-fade through the View Transitions API. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
