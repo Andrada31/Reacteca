@@ -57,6 +57,7 @@ function createEntry(slug: string, meta: ComponentMeta): ComponentEntry {
     registryDependencies: meta.registryDependencies ?? [],
     features: meta.features ?? [],
     props: meta.props ?? [],
+    inspiration: meta.inspiration ?? [],
     sourceFiles: orderSourceFiles(available, files),
     hasDemo: `../library/${slug}/${DEMO_FILE}` in demoModules,
   };

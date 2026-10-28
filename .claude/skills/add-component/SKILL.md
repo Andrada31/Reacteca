@@ -58,6 +58,7 @@ This drives the page, search, the API table and the AI prompt, so be thorough:
 - `features`: the 3 to 6 behaviours that define it. These become the prompt's requirements, so write them as testable statements ("Closes on Escape and outside click", not "Great UX").
 - `props`: one entry per public prop: `name`, `type` (TypeScript syntax as a string), `default` (as code, e.g. `"'md'"`), `required`, `description`. Keep it in sync with the actual props type.
 - `prompt`: the implementation details someone would need to recreate it without the source (technique, key CSS trick, timing values). Leave it out if nothing is non-obvious.
+- `inspiration`: if the component is based on someone else's design or site, credit it: `[{ label, href }]`, one entry per studio, site or page, each with a direct link. They show as "Inspired by" links at the top of the component's page. Also name them in a comment at the top of the main source file, so the credit travels with copied code. Never leave this out when the user names a reference.
 - `registryDependencies`: every shadcn/ui component imported from `@/components/ui/*` (file name without extension, e.g. `'dropdown-menu'`).
 - `dependencies`, `status`, and `addedAt` (today, `YYYY-MM-DD`).
 
@@ -72,6 +73,8 @@ npm run build
 ```
 
 If a dev server is available, open `/components/<slug>` and check all three tabs: the preview renders in both themes and at the mobile width, the Code tab lists the right files, and the Prompt tab reads well with both "With source" and "Spec only".
+
+A dev server that was already running doesn't generate Tailwind classes that appear only in files created after it started, so a new component can render collapsed or unstyled there even though the build is fine. Touch `src/index.css` (or restart `npm run dev`) to make Tailwind rescan.
 
 ## Don't
 

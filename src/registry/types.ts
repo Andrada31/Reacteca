@@ -23,6 +23,13 @@ export interface PreviewOptions {
 
 export type PreviewBackground = 'grid' | 'dots' | 'plain';
 
+/** Someone else's work a component is based on, credited with a link on its page. */
+export interface Credit {
+  /** Who or what, e.g. "The Design Office of David McGillivray". */
+  label: string;
+  href: string;
+}
+
 /**
  * What a component's `meta.ts` declares. Everything except name,
  * description and category is optional.
@@ -47,6 +54,8 @@ export interface ComponentMeta {
   features?: string[];
   /** API reference. Shown on the page and included in the prompt. */
   props?: PropDoc[];
+  /** Designs or sites the component is based on. Shown at the top of its page as "Inspired by" links. */
+  inspiration?: Credit[];
   /** Extra implementation notes appended to the generated AI prompt. */
   prompt?: string;
   /**
@@ -61,7 +70,7 @@ export interface ComponentMeta {
 export interface ComponentEntry
   extends Omit<
     ComponentMeta,
-    'tags' | 'status' | 'dependencies' | 'registryDependencies' | 'features' | 'props' | 'files'
+    'tags' | 'status' | 'dependencies' | 'registryDependencies' | 'features' | 'props' | 'inspiration' | 'files'
   > {
   slug: string;
   tags: string[];
@@ -70,6 +79,7 @@ export interface ComponentEntry
   registryDependencies: string[];
   features: string[];
   props: PropDoc[];
+  inspiration: Credit[];
   /** File names shown in the Code tab, in display order. */
   sourceFiles: string[];
   hasDemo: boolean;

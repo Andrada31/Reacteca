@@ -4,6 +4,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   Blocks,
   Calendar,
   Check,
@@ -109,6 +110,25 @@ function ComponentDetails({ entry }: { entry: ComponentEntry }) {
           <StatusBadge status={entry.status} />
         </div>
         <p className="mt-2.5 max-w-2xl text-base text-muted-foreground sm:text-[17px]">{entry.description}</p>
+
+        {entry.inspiration.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+            <span className="mr-1">Inspired by</span>
+            {entry.inspiration.map((credit) => (
+              <Badge
+                key={credit.href}
+                variant="outline"
+                className="h-6.5 bg-muted px-2.5 text-foreground transition-colors hover:bg-surface-3"
+                asChild
+              >
+                <a href={credit.href} target="_blank" rel="noreferrer">
+                  {credit.label}
+                  <ArrowUpRight aria-hidden />
+                </a>
+              </Badge>
+            ))}
+          </div>
+        )}
 
         <div className="mt-5 flex flex-wrap items-center gap-x-4.5 gap-y-2 text-sm text-muted-foreground [&_svg]:size-3.5">
           {category && (

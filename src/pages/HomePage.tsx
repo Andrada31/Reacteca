@@ -1,24 +1,40 @@
-import type { ReactNode } from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { useState, type ComponentType, type ReactNode } from 'react';
+import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  Blocks,
   Boxes,
   ChevronsUpDown,
+  Component,
   Copy,
+  Hammer,
   Inbox,
+  Layers,
   Monitor,
   Moon,
+  PencilRuler,
+  Puzzle,
   ScanLine,
   Search,
+  Shapes,
   Smartphone,
   Sparkles,
   Star,
   Sun,
   Tablet,
-  type LucideIcon,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/brand/GithubIcon';
 import { Logo } from '@/components/brand/Logo';
+import {
+  DribbbleIcon,
+  FacebookIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  TwitchIcon,
+  XIcon,
+  YoutubeIcon,
+} from '@/components/brand/SocialIcons';
 import { ComponentCard } from '@/components/ComponentCard';
 import { EmptyLibrary } from '@/components/EmptyLibrary';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
@@ -46,10 +62,10 @@ export function HomePage() {
           animate="show"
         >
           <motion.span className="block" variants={heroLine}>
-            Components, <Tile icon={Boxes} /> crafted once.
+            Components, <Tile icons={craftIcons} />crafted once.
           </motion.span>
           <motion.span className="block text-primary-strong" variants={heroLine}>
-            Ready to reuse <Tile icon={Sparkles} accent /> anywhere.
+            Ready to reuse <Tile icons={reuseIcons} accent />anywhere.
           </motion.span>
         </motion.h1>
         <motion.p
@@ -144,24 +160,79 @@ const heroLine: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: easeOut } },
 };
 
-const tilePop: Variants = {
-  hidden: { opacity: 0, scale: 0.3, rotate: -24 },
-  show: { opacity: 1, scale: 1, rotate: 0, transition: { type: 'spring', stiffness: 260, damping: 16, delay: 0.3 } },
+/**
+ * Opens a gap in the headline once its line has landed, pushing the words apart to make room for the tile.
+ * A spring from rest pulls it open slowly, overshoots a little and snaps back, like an elastic.
+ */
+const tileGap: Variants = {
+  hidden: { width: 0 },
+  show: { width: 'auto', transition: { type: 'spring', visualDuration: 0.7, bounce: 0.4, delay: 0.8 } },
 };
 
-/** An app-icon tile set inline with the headline text, sized in ems. Pops in after its line. */
-function Tile({ icon: Icon, accent }: { icon: LucideIcon; accent?: boolean }) {
+const tilePop: Variants = {
+  hidden: { opacity: 0, scale: 0.3, rotate: -24 },
+  show: { opacity: 1, scale: 1, rotate: 0, transition: { type: 'spring', stiffness: 260, damping: 16, delay: 1.05 } },
+};
+
+type TileIcon = ComponentType<{ strokeWidth?: number }>;
+
+/** Clicking a headline tile cycles its icon: crafting tools on the first line, places to reuse on the second. */
+const craftIcons: TileIcon[] = [Boxes, Blocks, Puzzle, Layers, Shapes, Component, PencilRuler, Hammer];
+const reuseIcons: TileIcon[] = [
+  Sparkles,
+  XIcon,
+  InstagramIcon,
+  YoutubeIcon,
+  GithubIcon,
+  LinkedinIcon,
+  DribbbleIcon,
+  TwitchIcon,
+  FacebookIcon,
+];
+
+const headlineSpring = { type: 'spring', stiffness: 420, damping: 16 } as const;
+
+/**
+ * An app-icon tile set inline with the headline text, sized in ems. The line first reads without it,
+ * then splits open and the tile pops into the gap. Write it with a space before and none after.
+ * Clicking it spins the current icon out and the next one in. It's decorative (aria-hidden, out of the
+ * tab order), so this is a pointer-only flourish.
+ */
+function Tile({ icons, accent }: { icons: TileIcon[]; accent?: boolean }) {
+  const reduceMotion = useReducedMotion();
+  const [index, setIndex] = useState(0);
+  const Icon = icons[index];
+
   return (
-    <motion.span
-      aria-hidden
-      variants={tilePop}
-      whileHover={{ rotate: -8, scale: 1.08 }}
-      className={cn(
-        'mx-[0.04em] inline-grid size-[0.84em] place-items-center rounded-[0.24em] align-middle [&_svg]:size-[0.42em]',
-        accent ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
-      )}
-    >
-      <Icon strokeWidth={2.25} />
+    <motion.span aria-hidden variants={reduceMotion ? undefined : tileGap} className="inline-block whitespace-pre">
+      {/* The entrance pop lives on this wrapper, so hover and tap below spring back without its delay. */}
+      <motion.span variants={tilePop} className="mx-[0.04em] inline-block align-middle">
+        <motion.button
+          type="button"
+          tabIndex={-1}
+          onClick={() => setIndex((current) => (current + 1) % icons.length)}
+          whileHover={{ rotate: -8, scale: 1.08 }}
+          whileTap={{ scale: 0.88 }}
+          transition={headlineSpring}
+          className={cn(
+            'grid size-[0.84em] cursor-pointer place-items-center rounded-[0.24em] [&_svg]:size-[0.42em]',
+            accent ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
+          )}
+        >
+          <AnimatePresence initial={false}>
+            <motion.span
+              key={index}
+              initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, scale: 0.3, rotate: 90 }}
+              transition={headlineSpring}
+              className="col-start-1 row-start-1 grid place-items-center"
+            >
+              <Icon strokeWidth={2.25} />
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
+      </motion.span>{' '}
     </motion.span>
   );
 }
