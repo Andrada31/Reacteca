@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { getCategory, type ComponentEntry } from '@/registry';
 import { DemoRenderer } from './DemoRenderer';
 import { layoutClass } from './patterns';
+import { useTileHovered } from './tile-hover';
 
 /**
  * The canvas a thumbnail lays out on, in CSS pixels, before it's scaled down to the tile. It's fixed (and
@@ -19,11 +20,14 @@ interface ComponentThumbnailProps {
 
 /**
  * A scaled-down, non-interactive live preview, mounted when scrolled into view. It shows the component's
- * thumbnail.tsx if it has one, otherwise its demo laid out as in the Preview tab.
+ * thumbnail.tsx if it has one, otherwise its demo laid out as in the Preview tab. A thumbnail scene plays
+ * while the tile around it is hovered; screens that can't hover play it once it's in view.
  */
 export function ComponentThumbnail({ entry, className }: ComponentThumbnailProps) {
   const { ref, inView } = useInView<HTMLDivElement>();
   const [scale, setScale] = useState(0);
+  const [canHover] = useState(() => window.matchMedia('(hover: hover)').matches);
+  const hovered = useTileHovered();
   const CategoryIcon = getCategory(entry.category)?.icon;
 
   useLayoutEffect(() => {
@@ -59,7 +63,12 @@ export function ComponentThumbnail({ entry, className }: ComponentThumbnailProps
               transform: `translate(-50%, -50%) scale(${scale})`,
             }}
           >
-            <DemoRenderer slug={entry.slug} compact thumbnail={entry.hasThumbnail} />
+            <DemoRenderer
+              slug={entry.slug}
+              compact
+              thumbnail={entry.hasThumbnail}
+              active={canHover ? hovered : inView}
+            />
           </div>
         )
       ) : (

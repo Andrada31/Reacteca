@@ -53,7 +53,7 @@ The app is built on **shadcn/ui + Tailwind CSS v4**, with a monochrome look mode
 
 Library tiles (home page, Components page) render the demo on a fixed 600×450 stage, laid out like the Preview canvas, then scale it down to the tile (about 0.45×) and crop whatever overflows. Look at the component's tile in both themes. If the demo is too tall, too sparse, or only shows its behaviour on interaction, add a `thumbnail.tsx` to the folder: a default-exported scene that fills the 600×450 stage and is shown in tiles instead of the demo. It never appears in the Code tab or the prompt.
 
-- Tiles are `inert` and ignore the pointer, so show the component in its most telling state. Animate into it once on mount if you need to (e.g. `floating-dock` glides synthetic mouse events along the dock, and `scroll-timeline` scrolls its own container), and jump straight to it under reduced motion.
+- Tiles are `inert` and ignore the pointer, so the scene drives the component itself. It receives `active` (`ThumbnailProps`): true while the tile is hovered or keyboard-focused, and on touch screens once it's in view. At rest, show a clean starting state; while `active`, play the behaviour (e.g. `floating-dock` glides synthetic mouse events along the dock, `scroll-timeline` scrolls its own container, `spotlight-carousel` steps its controlled `index`); when it turns false, return to rest, starting from wherever it got to. Under reduced motion, jump between the two states.
 - On the home page's gray tiles the surface tokens are shifted up a step (`on-surface-1` in `src/index.css`), so keep using `bg-background` / `bg-card` / `bg-muted` as usual.
 
 ### 5. Fill in `meta.ts` completely

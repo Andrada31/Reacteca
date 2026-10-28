@@ -7,7 +7,7 @@ src/library/
 └── pill-button/          # folder name = URL slug (/components/pill-button)
     ├── meta.ts           # required: name, description, category, props…
     ├── demo.tsx          # default export rendered in the Preview tab
-    ├── thumbnail.tsx     # optional: a 600×450 scene shown in library tiles instead of the demo
+    ├── thumbnail.tsx     # optional: a 600×450 scene shown in library tiles instead of the demo; plays on hover
     └── PillButton.tsx    # the component; every other source file appears in the Code tab
 ```
 

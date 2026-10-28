@@ -27,7 +27,12 @@ export default defineComponent({
       description:
         'The slides: `{ image, alt?, title, description?, tags? }`. `tags` are short labels shown as pills in the top-right corner.',
     },
-    { name: 'defaultIndex', type: 'number', default: '0', description: 'The slide in the spotlight at first.' },
+    {
+      name: 'index',
+      type: 'number',
+      description: 'The slide in the spotlight, when controlled. Changes glide like any other; update it from `onIndexChange`.',
+    },
+    { name: 'defaultIndex', type: 'number', default: '0', description: 'The slide in the spotlight at first, when uncontrolled.' },
     { name: 'onIndexChange', type: '(index: number) => void', description: 'Called when a different slide moves into the spotlight.' },
     { name: 'aria-label', type: 'string', default: "'Carousel'", description: 'Accessible name for the carousel region.' },
     { name: 'className', type: 'string', description: 'Classes for the root `<section>`.' },

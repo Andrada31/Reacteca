@@ -45,7 +45,7 @@ This is a hard rule from the owner.
 ## Implementation notes
 
 - `src/index.css`: theme blocks (`:root, .light` and `.dark`), then app additions: surface steps, footer tokens, `primary-strong` (the text-safe accent: deep cyan in light mode, cyan in dark), syntax colors, canvas patterns, and `on-surface-1` / `on-surface-2` (shift the surface tokens up a step for page-canvas content placed on a gray tile, as `ComponentCard` does).
-- Tiles (`ComponentThumbnail`) render a demo on a fixed 600×450 stage scaled to the tile. A component can ship a `thumbnail.tsx` scene for its tiles instead; it's excluded from the Code tab.
+- Tiles (`ComponentThumbnail`) render a demo on a fixed 600×450 stage scaled to the tile. A component can ship a `thumbnail.tsx` scene for its tiles instead; it's excluded from the Code tab. Scenes get an `active` prop (from `TileHoverContext`, set by `ComponentCard` / `PreviewCard`) and play only while their tile is hovered or keyboard-focused (on touch screens, once in view).
 - Custom utilities must not start with a Tailwind color prefix (`bg-`, `text-`, …): `cn()` (tailwind-merge) treats them as colors and silently drops the real color class next to them. That's why the patterns are `canvas-grid` / `canvas-dots`.
 - `npx shadcn add @shadcnblocks/theme/<name>` appends a second `:root` block because the light selector is `:root, .light`. Merge its values into `:root, .light` / `.dark`, delete the duplicate, and keep the app additions.
 - After `npx shadcn add <component>`, strip the new file's `border`, `border-input`, `ring-1 ring-foreground/10`, `shadow-*` and `bg-border` separators; give inputs and outlined controls a tonal fill (`bg-input` / `bg-muted`, hover `bg-surface-3`); and make controls `rounded-full`.

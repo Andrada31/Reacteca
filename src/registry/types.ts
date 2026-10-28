@@ -87,6 +87,15 @@ export interface ComponentEntry
   hasThumbnail: boolean;
 }
 
+/** What a thumbnail.tsx scene receives from its library tile. */
+export interface ThumbnailProps {
+  /**
+   * True while the tile is hovered or keyboard-focused (on touch screens, once it's in view). The scene
+   * plays its animation then and returns to rest when this turns false.
+   */
+  active: boolean;
+}
+
 export type CodeLanguage = 'tsx' | 'ts' | 'jsx' | 'js' | 'css' | 'json' | 'markdown' | 'bash' | 'plain';
 
 export interface SourceFile {

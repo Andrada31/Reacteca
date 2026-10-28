@@ -19,7 +19,9 @@ export interface SpotlightSlide {
 
 export interface SpotlightCarouselProps extends Omit<ComponentProps<'section'>, 'children'> {
   slides: SpotlightSlide[];
-  /** The slide in the spotlight at first. */
+  /** The slide in the spotlight, when controlled. Update it from `onIndexChange`. */
+  index?: number;
+  /** The slide in the spotlight at first, when uncontrolled. */
   defaultIndex?: number;
   onIndexChange?: (index: number) => void;
 }
@@ -36,6 +38,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 
 export function SpotlightCarousel({
   slides,
+  index: indexProp,
   defaultIndex = 0,
   onIndexChange,
   className,
@@ -45,7 +48,9 @@ export function SpotlightCarousel({
 }: SpotlightCarouselProps) {
   const reduceMotion = useReducedMotion();
   const last = Math.max(slides.length - 1, 0);
-  const [index, setIndex] = useState(() => clamp(defaultIndex, 0, last));
+  const controlled = indexProp !== undefined;
+  const [uncontrolledIndex, setUncontrolledIndex] = useState(() => clamp(defaultIndex, 0, last));
+  const index = clamp(controlled ? indexProp : uncontrolledIndex, 0, last);
   // Where the track is, in slides: whole numbers at rest, fractional while dragging or gliding.
   const position = useMotionValue(index);
   // Distance between neighbouring slide centres, in pixels.
@@ -71,14 +76,22 @@ export function SpotlightCarousel({
     return () => observer.disconnect();
   }, [pitch]);
 
+  // Glides to the spotlit slide whenever it changes, from a drag, a button, a key or a controlled `index`.
+  // It starts from wherever the track is, keeping a released drag's speed.
+  useLayoutEffect(() => {
+    const controls = animate(position, index, reduceMotion ? { duration: 0 } : glide);
+    return () => controls.stop();
+  }, [index, position, reduceMotion]);
+
   const go = (next: number) => {
     const target = clamp(next, 0, last);
-    if (target !== index) {
-      setIndex(target);
-      onIndexChange?.(target);
+    if (target === index) {
+      // Nothing changes, so a short drag springs back into place.
+      animate(position, index, reduceMotion ? { duration: 0 } : glide);
+      return;
     }
-    // Also runs when the index stays the same, so a short drag springs back into place.
-    animate(position, target, reduceMotion ? { duration: 0 } : glide);
+    if (!controlled) setUncontrolledIndex(target);
+    onIndexChange?.(target);
   };
 
   const handlePan = (_: PointerEvent, info: PanInfo) => {

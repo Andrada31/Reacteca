@@ -1,7 +1,7 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 import { categories, getCategory, type CategoryDefinition } from './categories';
 import { detectLanguage, normalizeCode, orderSourceFiles } from './source';
-import type { ComponentEntry, ComponentMeta, ComponentSource, SourceFile } from './types';
+import type { ComponentEntry, ComponentMeta, ComponentSource, SourceFile, ThumbnailProps } from './types';
 
 /*
  * Discovery
@@ -9,7 +9,8 @@ import type { ComponentEntry, ComponentMeta, ComponentSource, SourceFile } from 
  * Every folder in src/library is a component, except folders starting with "_"
  * (use those for drafts). Each folder needs a meta.ts and should have a demo.tsx.
  * It can add a thumbnail.tsx, a scene made for the library tiles, when the demo
- * doesn't read at tile size. Every other source file in it is shown in the Code tab.
+ * doesn't read at tile size; it plays while its tile is hovered (ThumbnailProps).
+ * Every other source file in it is shown in the Code tab.
  *
  * Metadata is loaded eagerly (it's tiny). Demos, thumbnails and raw source are
  * code-split and only fetched when a component is actually viewed.
@@ -24,7 +25,7 @@ const demoModules = import.meta.glob<{ default: ComponentType }>([
   '!../library/_*/**',
 ]);
 
-const thumbnailModules = import.meta.glob<{ default: ComponentType }>([
+const thumbnailModules = import.meta.glob<{ default: ComponentType<ThumbnailProps> }>([
   '../library/*/thumbnail.tsx',
   '!../library/_*/**',
 ]);
@@ -136,13 +137,18 @@ export function getAdjacentComponents(slug: string): {
 
 /* Lazy demos & source ------------------------------------------------------ */
 
-const lazyCache = new Map<string, LazyExoticComponent<ComponentType>>();
+// Keyed by file path, so each entry is a lazy component with the props type of the glob it came from.
+const lazyCache = new Map<string, unknown>();
 
-function getLazy(modules: typeof demoModules, slug: string, file: string): LazyExoticComponent<ComponentType> | null {
+function getLazy<P extends object>(
+  modules: Record<string, () => Promise<{ default: ComponentType<P> }>>,
+  slug: string,
+  file: string,
+): LazyExoticComponent<ComponentType<P>> | null {
   const path = `../library/${slug}/${file}`;
   const load = modules[path];
   if (!load) return null;
-  let component = lazyCache.get(path);
+  let component = lazyCache.get(path) as LazyExoticComponent<ComponentType<P>> | undefined;
   if (!component) {
     component = lazy(load);
     lazyCache.set(path, component);
@@ -156,7 +162,7 @@ export function getDemo(slug: string): LazyExoticComponent<ComponentType> | null
 }
 
 /** The component's thumbnail.tsx scene as a lazy component (render inside <Suspense>), or null. */
-export function getThumbnail(slug: string): LazyExoticComponent<ComponentType> | null {
+export function getThumbnail(slug: string): LazyExoticComponent<ComponentType<ThumbnailProps>> | null {
   return getLazy(thumbnailModules, slug, THUMBNAIL_FILE);
 }
 

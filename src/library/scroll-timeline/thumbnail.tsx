@@ -11,10 +11,10 @@ const steps = [
 ];
 
 /**
- * The library tile: the timeline in its own scroll box, scrolled once on reveal so the connector fills
- * and the second step lights up.
+ * The library tile: the timeline in its own scroll box. While the tile is hovered it scrolls down so the
+ * connector fills and the second step lights up; on leave it scrolls back to the top.
  */
-export default function Thumbnail() {
+export default function Thumbnail({ active }: { active: boolean }) {
   const reduce = useReducedMotion();
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -23,22 +23,23 @@ export default function Thumbnail() {
     const second = element?.querySelectorAll('li')[1];
     if (!element || !second) return;
 
-    // Rest with the second step near the top, its marker past the activation line.
-    const target = second.offsetTop - 56;
+    // Hovered, it rests with the second step near the top, its marker past the activation line.
+    const target = active ? second.offsetTop - 56 : 0;
     if (reduce) {
       element.scrollTop = target;
       return;
     }
-    const controls = animate(0, target, {
-      delay: 0.6,
-      duration: 1.4,
+    // Starts from wherever it is, so leaving mid-scroll turns straight back.
+    const controls = animate(element.scrollTop, target, {
+      delay: active ? 0.15 : 0,
+      duration: active ? 1.2 : 0.8,
       ease: 'easeInOut',
       onUpdate: (top) => {
         element.scrollTop = top;
       },
     });
     return () => controls.stop();
-  }, [reduce]);
+  }, [active, reduce]);
 
   return (
     <div ref={scroller} className="relative overflow-hidden px-16 pt-14">
