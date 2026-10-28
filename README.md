@@ -52,6 +52,7 @@ This creates:
 src/library/pill-button/          # folder name = URL slug → /components/pill-button
 ├── meta.ts                       # required: what the component is
 ├── demo.tsx                      # default export rendered in the Preview tab
+├── thumbnail.tsx                 # optional: a 600×450 scene shown in library tiles instead of the demo
 └── PillButton.tsx                # the component (any extra source file is shown in the Code tab)
 ```
 
@@ -121,10 +122,11 @@ The richer the metadata, the better the generated prompt.
 ```
 src/library/*/meta.ts    ──eager──▶  registry  ──▶  nav, search, pages, prompt
 src/library/*/demo.tsx   ──lazy───▶  Preview tab (React.lazy + Suspense + error boundary)
+src/library/*/thumbnail.tsx ─lazy─▶  library tiles, in place of the demo (optional)
 src/library/*/*.{tsx,css,…}?raw ─lazy─▶  Code tab and "With source" prompts
 ```
 
-- `src/registry/registry.ts` discovers components, applies defaults, orders them (by category, then name), and exposes queries such as `getComponent`, `getCategorySummaries` and `getAdjacentComponents`, plus lazy loaders (`getDemo`, `loadSource`).
+- `src/registry/registry.ts` discovers components, applies defaults, orders them (by category, then name), and exposes queries such as `getComponent`, `getCategorySummaries` and `getAdjacentComponents`, plus lazy loaders (`getDemo`, `getThumbnail`, `loadSource`).
 - `src/registry/prompt.ts` turns a component's metadata (and optionally its source) into a markdown prompt, including the shadcn/ui components it needs. Edit it to change the prompt's structure or wording.
 - `src/registry/search.ts` ranks matches by name, tags, category and description. The command palette uses cmdk's fuzzy matching.
 - A demo that crashes is caught by an error boundary and never takes the page down.

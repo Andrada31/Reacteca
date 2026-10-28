@@ -7,11 +7,12 @@ import type { ComponentEntry, ComponentMeta, ComponentSource, SourceFile } from 
  * Discovery
  * ---------
  * Every folder in src/library is a component, except folders starting with "_"
- * (use those for drafts). Each folder needs a meta.ts and should have a demo.tsx;
- * every other source file in it is shown in the Code tab.
+ * (use those for drafts). Each folder needs a meta.ts and should have a demo.tsx.
+ * It can add a thumbnail.tsx, a scene made for the library tiles, when the demo
+ * doesn't read at tile size. Every other source file in it is shown in the Code tab.
  *
- * Metadata is loaded eagerly (it's tiny). Demos and raw source are code-split
- * and only fetched when a component is actually viewed.
+ * Metadata is loaded eagerly (it's tiny). Demos, thumbnails and raw source are
+ * code-split and only fetched when a component is actually viewed.
  */
 const metaModules = import.meta.glob<ComponentMeta>(['../library/*/meta.ts', '!../library/_*/**'], {
   eager: true,
@@ -23,12 +24,23 @@ const demoModules = import.meta.glob<{ default: ComponentType }>([
   '!../library/_*/**',
 ]);
 
+const thumbnailModules = import.meta.glob<{ default: ComponentType }>([
+  '../library/*/thumbnail.tsx',
+  '!../library/_*/**',
+]);
+
 const sourceModules = import.meta.glob<string>(
-  ['../library/*/*.{tsx,ts,jsx,js,css,scss}', '!../library/*/meta.ts', '!../library/_*/**'],
+  [
+    '../library/*/*.{tsx,ts,jsx,js,css,scss}',
+    '!../library/*/meta.ts',
+    '!../library/*/thumbnail.tsx',
+    '!../library/_*/**',
+  ],
   { query: '?raw', import: 'default' },
 );
 
 const DEMO_FILE = 'demo.tsx';
+const THUMBNAIL_FILE = 'thumbnail.tsx';
 
 function parseLibraryPath(path: string): { slug: string; file: string } | null {
   const match = /\/library\/([^/]+)\/([^/]+)$/.exec(path);
@@ -60,6 +72,7 @@ function createEntry(slug: string, meta: ComponentMeta): ComponentEntry {
     inspiration: meta.inspiration ?? [],
     sourceFiles: orderSourceFiles(available, files),
     hasDemo: `../library/${slug}/${DEMO_FILE}` in demoModules,
+    hasThumbnail: `../library/${slug}/${THUMBNAIL_FILE}` in thumbnailModules,
   };
 }
 
@@ -123,18 +136,28 @@ export function getAdjacentComponents(slug: string): {
 
 /* Lazy demos & source ------------------------------------------------------ */
 
-const demoCache = new Map<string, LazyExoticComponent<ComponentType>>();
+const lazyCache = new Map<string, LazyExoticComponent<ComponentType>>();
+
+function getLazy(modules: typeof demoModules, slug: string, file: string): LazyExoticComponent<ComponentType> | null {
+  const path = `../library/${slug}/${file}`;
+  const load = modules[path];
+  if (!load) return null;
+  let component = lazyCache.get(path);
+  if (!component) {
+    component = lazy(load);
+    lazyCache.set(path, component);
+  }
+  return component;
+}
 
 /** The component's demo as a lazy component (render inside <Suspense>), or null. */
 export function getDemo(slug: string): LazyExoticComponent<ComponentType> | null {
-  const load = demoModules[`../library/${slug}/${DEMO_FILE}`];
-  if (!load) return null;
-  let demo = demoCache.get(slug);
-  if (!demo) {
-    demo = lazy(load);
-    demoCache.set(slug, demo);
-  }
-  return demo;
+  return getLazy(demoModules, slug, DEMO_FILE);
+}
+
+/** The component's thumbnail.tsx scene as a lazy component (render inside <Suspense>), or null. */
+export function getThumbnail(slug: string): LazyExoticComponent<ComponentType> | null {
+  return getLazy(thumbnailModules, slug, THUMBNAIL_FILE);
 }
 
 const sourceCache = new Map<string, Promise<ComponentSource>>();

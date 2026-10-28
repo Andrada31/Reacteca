@@ -43,6 +43,7 @@ import { useSearch } from '@/components/search/search-context';
 import { Button } from '@/components/ui/button';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { playKeySound } from '@/library/dock/key-sound';
 import { modKey, pluralize } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { allComponents, getCategorySummaries, getRecentComponents } from '@/registry';
@@ -195,8 +196,8 @@ const headlineSpring = { type: 'spring', stiffness: 420, damping: 16 } as const;
 /**
  * An app-icon tile set inline with the headline text, sized in ems. The line first reads without it,
  * then splits open and the tile pops into the gap. Write it with a space before and none after.
- * Clicking it spins the current icon out and the next one in. It's decorative (aria-hidden, out of the
- * tab order), so this is a pointer-only flourish.
+ * Clicking it plays the dock's keyboard click and spins the current icon out and the next one in.
+ * It's decorative (aria-hidden, out of the tab order), so this is a pointer-only flourish.
  */
 function Tile({ icons, accent }: { icons: TileIcon[]; accent?: boolean }) {
   const reduceMotion = useReducedMotion();
@@ -210,7 +211,10 @@ function Tile({ icons, accent }: { icons: TileIcon[]; accent?: boolean }) {
         <motion.button
           type="button"
           tabIndex={-1}
-          onClick={() => setIndex((current) => (current + 1) % icons.length)}
+          onClick={() => {
+            playKeySound();
+            setIndex((current) => (current + 1) % icons.length);
+          }}
           whileHover={{ rotate: -8, scale: 1.08 }}
           whileTap={{ scale: 0.88 }}
           transition={headlineSpring}

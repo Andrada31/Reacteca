@@ -10,7 +10,7 @@ export function ComponentCard({ entry }: { entry: ComponentEntry }) {
   return (
     <article className="group relative">
       <div className="aspect-[4/3] overflow-hidden rounded-[1.75rem] bg-card transition-colors duration-200 group-hover:bg-muted group-has-[a:focus-visible]:ring-3 group-has-[a:focus-visible]:ring-ring/50">
-        <ComponentThumbnail entry={entry} />
+        <ComponentThumbnail entry={entry} className="on-surface-1 group-hover:on-surface-2" />
       </div>
       <div className="flex items-start justify-between gap-3 px-1 pt-3.5">
         <div className="min-w-0">

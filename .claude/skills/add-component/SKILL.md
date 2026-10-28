@@ -49,6 +49,13 @@ The app is built on **shadcn/ui + Tailwind CSS v4**, with a monochrome look mode
 - It may show a few variants side by side (wrap them in a flex container with a gap) and may hold local state for interactive demos.
 - If the component needs a different canvas, set `meta.preview`: `layout: 'padded'` for wide content, `'fullscreen'` for page sections or backgrounds, plus `height` (default 420) and `background` (`grid` | `dots` | `plain`).
 
+### 4b. Check the thumbnail, add `thumbnail.tsx` if it doesn't read
+
+Library tiles (home page, Components page) render the demo on a fixed 600×450 stage, laid out like the Preview canvas, then scale it down to the tile (about 0.45×) and crop whatever overflows. Look at the component's tile in both themes. If the demo is too tall, too sparse, or only shows its behaviour on interaction, add a `thumbnail.tsx` to the folder: a default-exported scene that fills the 600×450 stage and is shown in tiles instead of the demo. It never appears in the Code tab or the prompt.
+
+- Tiles are `inert` and ignore the pointer, so show the component in its most telling state. Animate into it once on mount if you need to (e.g. `floating-dock` glides synthetic mouse events along the dock, and `scroll-timeline` scrolls its own container), and jump straight to it under reduced motion.
+- On the home page's gray tiles the surface tokens are shifted up a step (`on-surface-1` in `src/index.css`), so keep using `bg-background` / `bg-card` / `bg-muted` as usual.
+
 ### 5. Fill in `meta.ts` completely
 
 This drives the page, search, the API table and the AI prompt, so be thorough:

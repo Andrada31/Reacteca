@@ -60,7 +60,7 @@ export interface ComponentMeta {
   prompt?: string;
   /**
    * Source files to show in the Code tab, in order.
-   * Defaults to every source file in the folder except meta.ts and demo.tsx.
+   * Defaults to every source file in the folder except meta.ts, demo.tsx and thumbnail.tsx.
    */
   files?: string[];
   preview?: PreviewOptions;
@@ -83,6 +83,8 @@ export interface ComponentEntry
   /** File names shown in the Code tab, in display order. */
   sourceFiles: string[];
   hasDemo: boolean;
+  /** Has a thumbnail.tsx: a scene made for the library tiles, shown there instead of the demo. */
+  hasThumbnail: boolean;
 }
 
 export type CodeLanguage = 'tsx' | 'ts' | 'jsx' | 'js' | 'css' | 'json' | 'markdown' | 'bash' | 'plain';

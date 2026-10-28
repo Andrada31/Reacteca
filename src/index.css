@@ -261,6 +261,33 @@
     padding-inline: 2rem;
 }
 
+/*
+ * Demos are made for the page canvas. Inside a gray tile, these shift every surface token up a step, so
+ * a demo's bg-background parts match the tile and its other layers keep their contrast: on-surface-1
+ * for a bg-card tile, on-surface-2 for a bg-muted one (the hovered tile). They only read the surface
+ * steps inherited from the theme, never the tokens they redefine.
+ */
+@utility on-surface-1 {
+  --background: var(--surface-1);
+  --card: var(--surface-2);
+  --muted: var(--surface-3);
+  --input: var(--surface-3);
+  --popover: var(--surface-3);
+  --secondary: var(--surface-3);
+  --accent: color-mix(in oklab, var(--primary) 20%, var(--surface-3));
+}
+
+@utility on-surface-2 {
+  --surface-4: color-mix(in oklab, var(--foreground) 4%, var(--surface-3));
+  --background: var(--surface-2);
+  --card: var(--surface-3);
+  --muted: var(--surface-4);
+  --input: var(--surface-4);
+  --popover: var(--surface-4);
+  --secondary: var(--surface-4);
+  --accent: color-mix(in oklab, var(--primary) 20%, var(--surface-4));
+}
+
 /* Canvas backgrounds for the preview panel (hard-stop lines and dots, not color gradients). */
 @utility canvas-grid {
   background-image:
