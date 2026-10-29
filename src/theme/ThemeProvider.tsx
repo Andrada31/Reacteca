@@ -1,68 +1,58 @@
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
+import { easeOut } from '@/lib/motion';
 import { readStorage, storageKeys, writeStorage } from '@/lib/storage';
-import { ThemeContext, type ResolvedTheme, type ThemePreference } from './theme-context';
+import { ThemeContext, type Theme, type ThemeOrigin } from './theme-context';
 
-const DARK_QUERY = '(prefers-color-scheme: dark)';
-
-function subscribeToSystemTheme(onChange: () => void) {
-  const media = window.matchMedia(DARK_QUERY);
-  media.addEventListener('change', onChange);
-  return () => media.removeEventListener('change', onChange);
-}
-
-function getSystemTheme(): ResolvedTheme {
-  return window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
-}
-
-function resolveTheme(preference: ThemePreference, system: ResolvedTheme): ResolvedTheme {
-  return preference === 'system' ? system : preference;
-}
-
-function applyTheme(theme: ResolvedTheme) {
+function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle('dark', theme === 'dark');
 }
 
-function readPreference(): ThemePreference {
-  const stored = readStorage<string>(storageKeys.theme, 'system');
-  return stored === 'light' || stored === 'dark' ? stored : 'system';
+/** The saved theme; on a first visit, whichever the OS prefers. Mirrors the inline script in index.html. */
+function readTheme(): Theme {
+  const stored = readStorage<unknown>(storageKeys.theme, null);
+  if (stored === 'light' || stored === 'dark') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/** Grows the new theme's snapshot out of `origin` until the circle covers the viewport. */
+function revealFrom({ x, y }: ThemeOrigin) {
+  const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+  document.documentElement.animate(
+    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+    { duration: 350, easing: `cubic-bezier(${easeOut.join(', ')})`, pseudoElement: '::view-transition-new(root)' },
+  );
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<ThemePreference>(readPreference);
-  const systemTheme = useSyncExternalStore(subscribeToSystemTheme, getSystemTheme, () => 'light' as const);
-  const resolved = resolveTheme(preference, systemTheme);
+  const [theme, setThemeState] = useState<Theme>(readTheme);
 
-  // Keeps <html> in sync, including when the OS theme changes under "system".
-  useEffect(() => applyTheme(resolved), [resolved]);
-
-  const setPreference = useCallback(
-    (next: ThemePreference) => {
+  const setTheme = useCallback(
+    (next: Theme, origin?: ThemeOrigin) => {
       writeStorage(storageKeys.theme, next);
-      const nextResolved = resolveTheme(next, systemTheme);
+      if (next === theme) return;
       const commit = () => {
-        applyTheme(nextResolved);
-        flushSync(() => setPreferenceState(next));
+        applyTheme(next);
+        flushSync(() => setThemeState(next));
       };
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (nextResolved !== resolved && document.startViewTransition && !reduceMotion) {
-        document.startViewTransition(commit);
-      } else {
+      if (!document.startViewTransition || reduceMotion) {
         commit();
+        return;
       }
+      const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      // `ready` rejects when a newer switch skips this one; that switch runs its own reveal.
+      document.startViewTransition(commit).ready.then(() => revealFrom(origin ?? center), () => {});
     },
-    [resolved, systemTheme],
+    [theme],
   );
 
   const toggle = useCallback(
-    () => setPreference(resolved === 'dark' ? 'light' : 'dark'),
-    [resolved, setPreference],
+    (origin?: ThemeOrigin) => setTheme(theme === 'dark' ? 'light' : 'dark', origin),
+    [theme, setTheme],
   );
 
-  const value = useMemo(
-    () => ({ preference, resolved, setPreference, toggle }),
-    [preference, resolved, setPreference, toggle],
-  );
+  const value = useMemo(() => ({ theme, setTheme, toggle }), [theme, setTheme, toggle]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

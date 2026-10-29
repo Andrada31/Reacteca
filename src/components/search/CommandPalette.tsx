@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Box, House, LayoutGrid, Monitor, Moon, Sun } from 'lucide-react';
+import { BookOpen, Box, House, LayoutGrid, Moon, Sun } from 'lucide-react';
 import {
   Command,
   CommandDialog,
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/command';
 import { Kbd } from '@/components/ui/kbd';
 import { allComponents, getCategory } from '@/registry';
-import { useTheme, type ThemePreference } from '@/theme/theme-context';
+import { useTheme, type Theme } from '@/theme/theme-context';
 
 const pages = [
   { to: '/', label: 'Home', icon: House },
@@ -20,10 +20,9 @@ const pages = [
   { to: '/getting-started', label: 'Getting started', icon: BookOpen },
 ];
 
-const themes: Array<{ value: ThemePreference; label: string; icon: typeof Sun }> = [
+const themes: Array<{ value: Theme; label: string; icon: typeof Sun }> = [
   { value: 'light', label: 'Light theme', icon: Sun },
   { value: 'dark', label: 'Dark theme', icon: Moon },
-  { value: 'system', label: 'System theme', icon: Monitor },
 ];
 
 interface CommandPaletteProps {
@@ -34,7 +33,7 @@ interface CommandPaletteProps {
 /** ⌘K / Ctrl+K search over components, pages and theme actions. */
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
-  const { setPreference } = useTheme();
+  const { setTheme } = useTheme();
 
   const run = (action: () => void) => {
     onOpenChange(false);
@@ -87,7 +86,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           </CommandGroup>
           <CommandGroup heading="Theme">
             {themes.map(({ value, label, icon: Icon }) => (
-              <CommandItem key={value} value={label} onSelect={() => run(() => setPreference(value))}>
+              <CommandItem key={value} value={label} onSelect={() => run(() => setTheme(value))}>
                 <Icon />
                 {label}
               </CommandItem>

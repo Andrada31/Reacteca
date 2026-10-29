@@ -76,7 +76,7 @@ export function HomePage() {
             crafted once.
           </motion.span>
           <motion.span
-            className="block text-primary-strong"
+            className="block text-primary-display"
             variants={heroLine}
           >
             Ready to reuse <Tile icons={reuseIcons} accent />
@@ -133,7 +133,7 @@ export function HomePage() {
           >
             One library
             <br />
-            for every <span className="text-primary-strong">workflow.</span>
+            for every <span className="text-primary-display">workflow.</span>
           </h2>
         </Reveal>
         <Stagger className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

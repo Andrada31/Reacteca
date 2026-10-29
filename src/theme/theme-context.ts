@@ -1,16 +1,19 @@
 import { createContext, useContext } from 'react';
 
-export type ThemePreference = 'light' | 'dark' | 'system';
-export type ResolvedTheme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
+
+/** A viewport point (client coordinates) the next theme grows out of. */
+export interface ThemeOrigin {
+  x: number;
+  y: number;
+}
 
 export interface ThemeContextValue {
-  /** What the user picked. */
-  preference: ThemePreference;
-  /** What is actually applied. */
-  resolved: ResolvedTheme;
-  setPreference: (preference: ThemePreference) => void;
+  theme: Theme;
+  /** Applies a theme; with an origin, it spreads from that point as a circle. */
+  setTheme: (theme: Theme, origin?: ThemeOrigin) => void;
   /** Switches between light and dark. */
-  toggle: () => void;
+  toggle: (origin?: ThemeOrigin) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);

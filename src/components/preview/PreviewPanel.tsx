@@ -5,7 +5,7 @@ import { IconButton } from '@/components/IconButton';
 import { SegmentedControl, type SegmentOption } from '@/components/SegmentedControl';
 import { cn } from '@/lib/utils';
 import type { ComponentEntry, PreviewBackground } from '@/registry';
-import { useTheme, type ResolvedTheme } from '@/theme/theme-context';
+import { useTheme, type Theme } from '@/theme/theme-context';
 import { DemoRenderer } from './DemoRenderer';
 import { layoutClass, patternClass } from './patterns';
 
@@ -26,14 +26,14 @@ const backgroundOptions: SegmentOption<PreviewBackground>[] = [
 ];
 
 export function PreviewPanel({ entry }: { entry: ComponentEntry }) {
-  const { resolved } = useTheme();
-  const [themeOverride, setThemeOverride] = useState<ResolvedTheme | null>(null);
+  const { theme } = useTheme();
+  const [themeOverride, setThemeOverride] = useState<Theme | null>(null);
   const [viewport, setViewport] = useState<Viewport>('desktop');
   const [background, setBackground] = useState<PreviewBackground>(entry.preview?.background ?? 'grid');
   const [reloadKey, setReloadKey] = useState(0);
 
-  const previewTheme = themeOverride ?? resolved;
-  const nextTheme: ResolvedTheme = previewTheme === 'dark' ? 'light' : 'dark';
+  const previewTheme = themeOverride ?? theme;
+  const nextTheme: Theme = previewTheme === 'dark' ? 'light' : 'dark';
   const width = viewportWidths[viewport];
 
   return (

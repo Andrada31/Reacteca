@@ -69,6 +69,7 @@
 
     /* App additions. */
     --color-primary-strong: var(--primary-strong);
+    --color-primary-display: var(--primary-display);
     --color-code: var(--code);
     --color-surface-1: var(--surface-1);
     --color-surface-2: var(--surface-2);
@@ -120,6 +121,7 @@
 
     /* App additions. */
     --primary-strong: oklch(0.52 0.10 215);
+    --primary-display: oklch(0.72 0.12 205);
     --footer: oklch(0.17 0 0);
     --footer-foreground: oklch(0.97 0 0);
     --footer-muted: oklch(0.66 0 0);
@@ -166,6 +168,7 @@
     --sidebar-ring: oklch(0.8012 0.1089 201.1736);
 
     --primary-strong: var(--primary);
+    --primary-display: var(--primary);
     --footer: var(--surface-2);
     --footer-foreground: var(--foreground);
     --footer-muted: var(--muted-foreground);
@@ -302,10 +305,11 @@
   background-size: 16px 16px;
 }
 
-/* Theme switches cross-fade through the View Transitions API. */
+/* Theme switches: ThemeProvider grows the new theme out of the toggle as a circle, over a still old view. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 260ms;
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 @media (prefers-reduced-motion: reduce) {

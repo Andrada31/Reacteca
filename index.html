@@ -14,13 +14,12 @@
     <script>
       // Apply the saved theme before first paint so there is no flash.
       // Keep the key in sync with storageKeys.theme in src/lib/storage.ts.
+      // A first visit (nothing saved yet) starts from the OS preference.
       (function () {
-        var dark = false;
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         try {
-          var stored = localStorage.getItem('reacteca:theme');
-          var preference = stored ? JSON.parse(stored) : 'system';
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          dark = preference === 'dark' || (preference !== 'light' && prefersDark);
+          var stored = JSON.parse(localStorage.getItem('reacteca:theme'));
+          if (stored === 'light' || stored === 'dark') dark = stored === 'dark';
         } catch (e) {}
         document.documentElement.classList.toggle('dark', dark);
       })();

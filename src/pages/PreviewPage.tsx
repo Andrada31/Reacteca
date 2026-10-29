@@ -5,10 +5,10 @@ import { layoutClass, patternClass } from '@/components/preview/patterns';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { cn } from '@/lib/utils';
 import { getComponent, type PreviewBackground } from '@/registry';
-import { useTheme, type ResolvedTheme } from '@/theme/theme-context';
+import { useTheme, type Theme } from '@/theme/theme-context';
 import { NotFoundPage } from './NotFoundPage';
 
-const themes: ResolvedTheme[] = ['light', 'dark'];
+const themes: Theme[] = ['light', 'dark'];
 const backgrounds: PreviewBackground[] = ['grid', 'dots', 'plain'];
 
 /**
@@ -18,7 +18,7 @@ const backgrounds: PreviewBackground[] = ['grid', 'dots', 'plain'];
 export function PreviewPage() {
   const { slug = '' } = useParams();
   const [params] = useSearchParams();
-  const { resolved } = useTheme();
+  const { theme: appTheme } = useTheme();
   const entry = getComponent(slug);
   useDocumentTitle(entry ? `${entry.name} preview` : undefined);
 
@@ -30,7 +30,7 @@ export function PreviewPage() {
     );
   }
 
-  const theme = themes.find((value) => value === params.get('theme')) ?? resolved;
+  const theme = themes.find((value) => value === params.get('theme')) ?? appTheme;
   const background = backgrounds.find((value) => value === params.get('bg')) ?? entry.preview?.background ?? 'grid';
   const layout = entry.preview?.layout ?? 'centered';
 
