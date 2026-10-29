@@ -10,6 +10,8 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Served from https://andrada31.github.io/Reacteca/ (GitHub Pages project site).
+  base: '/Reacteca/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

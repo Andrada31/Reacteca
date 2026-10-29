@@ -35,7 +35,7 @@ const router = createBrowserRouter([
     HydrateFallback: PageLoader,
     lazy: () => import('./pages/PreviewPage').then((m) => ({ Component: m.PreviewPage })),
   },
-]);
+], { basename: import.meta.env.BASE_URL });
 
 export function App() {
   return (
